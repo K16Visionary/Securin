@@ -38,6 +38,7 @@ API: NVD CVE 2.0 API
 Testing: (Planned) PyTest
 
 🚀 How to Run the Project
+
 1️⃣ Setup
 bash
 Copy
@@ -52,6 +53,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+
 2️⃣ MySQL Setup
 Create a MySQL database (e.g., cvedb).
 
@@ -61,11 +63,13 @@ python
 Copy
 Edit
 engine = create_engine("mysql+pymysql://username:password@localhost/cvedb")
+
 3️⃣ Run the Data Sync
 bash
 Copy
 Edit
 python sync_cves.py
+
 4️⃣ Start Flask Server
 bash
 Copy
