@@ -3,29 +3,27 @@ This project fetches CVE (Common Vulnerabilities and Exposures) information from
 
 ✅ Features Implemented
 📥 CVE Data Ingestion
-Fetches all CVE data using startIndex and resultsPerPage from the NVD API.
-
-Stores the data in a MySQL database using SQLAlchemy ORM.
-
-Cleans and deduplicates records before inserting them into the DB.
+          Fetches all CVE data using startIndex and resultsPerPage from the NVD API.
+          Stores the data in a MySQL database using SQLAlchemy ORM.
+          Cleans and deduplicates records before inserting them into the DB.
 
 🔍 API Endpoints
-Base route: /cves/list
+  Base route: /cves/list
 
 📊 Web UI
-Displays data in an HTML table with:
+  Displays data in an HTML table with:
 
 CVE ID
 
-Identifier
+  Identifier
 
-Published Date
+  Published Date
 
-Last Modified Date
+  Last Modified Date
 
-Status
+  Status
 
-Shows Total Records.
+  Shows Total Records.
 
 Includes pagination options: 10 (default), 50, 100 results per page.
 
