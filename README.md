@@ -72,3 +72,7 @@ Copy
 Edit
 python app.py
 Visit http://localhost:5000/cves/list to view the CVE data UI.
+
+<img width="1847" height="1089" alt="image" src="https://github.com/user-attachments/assets/3b51ca25-ef52-48a9-a646-81ca954223f0" />
+
+
