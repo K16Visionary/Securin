@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CVE Details</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8f9fa;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #0066cc;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+    .section {
+      margin: 25px 0;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .description {
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background: #f5f6fa;
+      font-weight: bold;
+    }
+    .metric-item {
+      margin: 10px 0;
+    }
+    .severity {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .severity.LOW { background: #d4edda; color: #155724; }
+    .severity.MEDIUM { background: #fff3cd; color: #856404; }
+    .severity.HIGH { background: #f8d7da; color: #721c24; }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    .error {
+      color: #dc3545;
+      padding: 15px;
+      margin: 15px 0;
+      background: #f8d7da;
+      border-radius: 4px;
+    }
+    .pre-line {
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/cves" class="back-link">← Back to CVE List</a>
+    <div id="content" class="loading">
+      Loading CVE details...
+    </div>
+  </div>
+
+  <script>
+    const content = document.getElementById('content');
+    const cveId = window.location.pathname.split('/cves/')[1];
+
+    async function fetchCVEDetails() {
+      try {
+        const apiCveId = cveId.startsWith('CVE-') ? cveId : `CVE-${cveId}`;
+        const res = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${apiCveId}`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        
+        const data = await res.json();
+        const vuln = data.vulnerabilities?.[0];
+        if (!vuln) throw new Error('CVE not found');
+
+        const cve = vuln.cve;
+        const metrics = vuln.cve.metrics?.cvssMetricV2?.[0] || {};
+        const cvssData = metrics.cvssData || {};
+        const baseMetricV2 = metrics.baseMetricV2 || {};
+        
+        const desc = cve.descriptions?.find(d => d.lang === 'en')?.value || 'No description available';
+        
+        // CVSS V2 Values
+        const score = cvssData.baseScore ?? '-';
+        const severity = cvssData.baseSeverity ?? '-';
+        const vector = cvssData.vectorString ?? '-';
+        const exploitabilityScore = baseMetricV2.exploitabilityScore ?? '-';
+        const impactScore = baseMetricV2.impactScore ?? '-';
+
+        // Parse vector string for the table
+        const vectorParts = {};
+        if (vector && vector !== '-') {
+          vector.split('/').forEach(part => {
+            const [key, value] = part.split(':');
+            vectorParts[key] = value;
+          });
+        }
+
+        // Get CPE matches
+        const cpeMatches = [];
+        if (cve.configurations) {
+          cve.configurations.nodes?.forEach(node => {
+            if (node.cpeMatch) {
+              cpeMatches.push(...node.cpeMatch);
+            }
+          });
+        }
+
+        const html = `
+          <h1>${apiCveId}</h1>
+
+          <div class="section">
+            <div class="section-title">Description:</div>
+            <div class="description pre-line">${desc}</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">CVSS V2 Metrics:</div>
+            <div class="metric-item">Severity: <span class="severity ${severity}">${severity}</span></div>
+            <div class="metric-item">Score: ${score}</div>
+            <div class="metric-item">Vector String: ${vector}</div>
+          </div>
+
+          <table>
+            <tr>
+              <th>Access Vector</th>
+              <th>Access Complexity</th>
+              <th>Authentication</th>
+              <th>Confidentiality Impact</th>
+              <th>Integrity Impact</th>
+              <th>Availability Impact</th>
+            </tr>
+            <tr>
+              <td>${vectorParts.AV || '-'}</td>
+              <td>${vectorParts.AC || '-'}</td>
+              <td>${vectorParts.Au || '-'}</td>
+              <td>${vectorParts.C || '-'}</td>
+              <td>${vectorParts.I || '-'}</td>
+              <td>${vectorParts.A || '-'}</td>
+            </tr>
+          </table>
+
+          <div class="section">
+            <div class="section-title">Scores:</div>
+            <div class="metric-item">Exploitability Score: ${exploitabilityScore}</div>
+            <div class="metric-item">Impact Score: ${impactScore}</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">CPE:</div>
+            <table>
+              <tr>
+                <th>Criteria</th>
+                <th>Match Criteria ID</th>
+                <th>Vulnerable</th>
+              </tr>
+              ${cpeMatches.length > 0 ? cpeMatches.map(cpe => `
+                <tr>
+                  <td>${cpe.criteria}</td>
+                  <td>${cpe.matchCriteriaId || '-'}</td>
+                  <td>Yes</td>
+                </tr>
+              `).join('') : '<tr><td colspan="3">No CPE data available</td></tr>'}
+            </table>
+          </div>
+        `;
+
+        content.innerHTML = html;
+        content.className = '';
+      } catch (e) {
+        content.innerHTML = `
+          <div class="error">
+            Failed to load details for ${cveId}. Please try again later.
+          </div>
+        `;
+        content.className = '';
+      }
+    }
+
+    fetchCVEDetails();
+  </script>
+</body>
+</html>

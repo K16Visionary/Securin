@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CVE Records</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: #f6f8fa;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 32px 40px 40px 40px;
+    }
+    h2 {
+      margin-top: 0;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #1a237e;
+    }
+    .search-bar {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 8px 12px;
+      font-size: 15px;
+      width: 300px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+    .total-count {
+      font-size: 16px;
+      color: #374151;
+      font-weight: 500;
+    }
+    select {
+      margin-left: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #b0bec5;
+      background: #f7fafc;
+      font-size: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 24px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(60,72,88,0.07);
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+    th {
+      background: #e3e8f0;
+      font-weight: 600;
+      color: #263159;
+      border-bottom: 2px solid #cfd8dc;
+    }
+    td {
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+    }
+    tr {
+      transition: background 0.18s;
+      cursor: pointer;
+    }
+    tr:hover {
+      background: #f1f6ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>CVE List</h2>
+
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search here...">
+    </div>
+
+    <div class="results-bar">
+      <span class="total-count">Total Records: <span id="total-count">Loading...</span></span>
+      <div>
+        Results Per Page:
+        <select id="limit-select">
+          <option value="10" selected>10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>IDENTIFIER</th>
+          <th>PUBLISHED DATE</th>
+          <th>LAST MODIFIED DATE</th>
+          <th>STATUS</th>
+        </tr>
+      </thead>
+      <tbody id="cve-table-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    let limit = 10;
+    let typingTimeout = null;
+
+    const tbody = document.getElementById("cve-table-body");
+    const totalCount = document.getElementById("total-count");
+    const limitSelect = document.getElementById("limit-select");
+    const searchInput = document.getElementById("search-input");
+
+    async function fetchCVEs() {
+      const res = await fetch(`/api/cves?page=${currentPage}&limit=${limit}`);
+      const json = await res.json();
+      renderTable(json.data);
+      totalCount.textContent = json.total;
+    }
+
+    async function searchCVEs(query) {
+      const res = await fetch(`/api/cves/search?q=${encodeURIComponent(query)}`);
+      const json = await res.json();
+      renderTable(json.data);
+      totalCount.textContent = json.total;
+    }
+
+    function renderTable(data) {
+      tbody.innerHTML = "";
+      data.forEach(cve => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${cve['ID']}</td>
+          <td>${cve['IDENTIFIER'] || '-'}</td>
+          <td>${cve['PUBLISHED DATE'] || '-'}</td>
+          <td>${cve['LAST MODIFIED DATE'] || '-'}</td>
+          <td>${cve['STATUS'] || '-'}</td>
+        `;
+        row.addEventListener('click', () => {
+          window.location.href = `/cves/${cve['ID']}`;
+        });
+        tbody.appendChild(row);
+      });
+    }
+
+    limitSelect.addEventListener("change", () => {
+      limit = parseInt(limitSelect.value);
+      currentPage = 1;
+      fetchCVEs();
+    });
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        const q = searchInput.value.trim();
+        if (q) {
+          searchCVEs(q);
+        } else {
+          fetchCVEs();  
+        }
+      }, 300);
+    });
+
+    fetchCVEs();
+  </script>
+</body>
+</html>
