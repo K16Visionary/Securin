@@ -115,11 +115,12 @@ python app.py
 
 ---
 
-## 🛠️ Improvements Planned
-- 🔐 Authentication & Access Control
-- 📁 Export options (CSV, JSON)
-- 📈 Data insights or CVSS score graphs
-- ✅ Test coverage using PyTest
+## 🛠️ Points Covered
+    1. Render CPEs in a table with specific columns and formatting
+    2. Field-level filtering using the /search API
+    3. Pagination with customizable results per page (15 to 50)
+    4. Fallback screen when no results are found
+    5. Fallback screen when no data is available
 
 ---
 
