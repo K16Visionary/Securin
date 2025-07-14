@@ -81,5 +81,8 @@ Visit http://localhost:5000/cves/list to view the CVE data UI.
 
 <img width="1834" height="1089" alt="image" src="https://github.com/user-attachments/assets/c7b6d0e5-379f-42d5-9005-d9a9da76f696" />
 
+<img width="301" height="56" alt="image" src="https://github.com/user-attachments/assets/64eb5a04-a33c-4295-812e-193245631560" />
+
+
 
 
