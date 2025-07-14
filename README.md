@@ -111,7 +111,8 @@ python app.py
 
 <img src="https://github.com/user-attachments/assets/1a4f01c8-b92c-4168-9532-ed6d5a36a475" alt="Screenshot 3" width="100%" />
 
-<img src="https://github.com/user-attachments/assets/eca2c7ae-2151-4636-986d-c8b050812ce9" alt="Screenshot 4" width="100%" />
+![466123828-eca2c7ae-2151-4636-986d-c8b050812ce9](https://github.com/user-attachments/assets/8f27f8f7-356f-4951-a60a-cf36e3069071)
+
 
 ---
 
