@@ -115,7 +115,7 @@ python app.py
 
 ---
 
-## 🛠️ Points Covered
+## 🛠️ Points Implemented
     1. Render CPEs in a table with specific columns and formatting
     2. Field-level filtering using the /search API
     3. Pagination with customizable results per page (15 to 50)
