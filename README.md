@@ -66,8 +66,8 @@ This project fetches CVE (Common Vulnerabilities and Exposures) data from the **
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/cve-data-visualizer.git
-cd cve-data-visualizer
+git clone https://github.com/K16Visionary/Securin.git
+cd Securin
 ```
 
 ### 2️⃣ Create a Virtual Environment
@@ -91,12 +91,12 @@ engine = create_engine("mysql+pymysql://username:password@localhost/cvedb")
 
 ### 5️⃣ Sync CVE Data
 ```bash
-python sync_cves.py
+python app.py
 ```
 
 ### 6️⃣ Run the Flask App
 ```bash
-python app.py
+python main.py
 ```
 
 - Visit [http://localhost:5000/cves/list](http://localhost:5000/cves/list) to access the CVE UI.
